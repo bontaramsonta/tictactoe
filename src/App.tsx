@@ -1,14 +1,27 @@
-import React, { useCallback } from "react";
+import React from "react";
+
+const getChar = (turn: number) => (turn === 1 ? "X" : "O");
+
+const Score: React.FC<{ score: [number, number] }> = ({ score }) => {
+  return (
+    <div>
+      {score[0]}:{score[1]}
+    </div>
+  );
+};
+
 function App() {
+  const setRandomTurn = () => Math.floor(Math.random() * 2 + 1);
+
   const [gameState, setGameState] = React.useState(new Array(9).fill(null));
-  const [turn, setTurn] = React.useState(Math.floor(Math.random() * 2 + 1)); // 1,2
+  const [turn, setTurn] = React.useState(setRandomTurn()); // 1,2
   const [result, setResult] = React.useState<string | null>(null);
-  const [score, setScore] = React.useState([0, 0]);
+  const [score, setScore] = React.useState<[number, number]>([0, 0]);
   const [moves, setMoves] = React.useState([]);
 
   const checkIfWon = () => {
     for (const turn of [1, 2]) {
-      const char = turn === 1 ? "X" : "O";
+      const char = getChar(turn);
       // column check
       for (let i = 0; i < 3; i++) {
         const [first, second, third] = [
@@ -51,7 +64,7 @@ function App() {
       return;
     }
     console.log("[played]", turn, index, gameState[index]);
-    const char = turn === 1 ? "X" : "O";
+    const char = getChar(turn);
     if (gameState[index] === null) {
       const newGameState = gameState;
       newGameState.splice(index, 1, char);
@@ -59,18 +72,44 @@ function App() {
     }
     const won = checkIfWon();
     if (won) {
+      setScore(
+        score.map((score, i) => (i + 1 === turn ? score + 1 : score)) as [
+          number,
+          number
+        ]
+      );
       setResult(`Player ${turn} won`);
     }
     setTurn(turn === 1 ? 2 : 1);
   };
 
   return (
-    <div className="container">
-      {gameState.map((value, index) => (
-        <div key={index} onClick={() => play(index)} className="box">
-          {value}
+    <div>
+      <Score score={score} />
+      <p>{`its Player ${turn}'s turn (${getChar(turn)})`}</p>
+      <div className="container">
+        {gameState.map((value, index) => (
+          <div key={index} onClick={() => play(index)} className="box">
+            {value}
+          </div>
+        ))}
+      </div>
+      {result && (
+        <div>
+          <p>{result}</p>
+          <button
+            onClick={() => {
+              console.log("[start new game]");
+              setResult(null);
+              setGameState(new Array(9).fill(null));
+              setTurn(setRandomTurn());
+            }}
+          >
+            start new game
+          </button>
+          <button onClick={() => {}}>reset scores</button>
         </div>
-      ))}
+      )}
     </div>
   );
 }
