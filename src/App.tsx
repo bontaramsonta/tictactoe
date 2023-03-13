@@ -74,8 +74,6 @@ function App() {
     if (result) return;
     // selected box is already filled
     if (gameState[index] !== null) return;
-    // all boxes are filled
-    if (gameState.every((move) => move !== null)) return;
     console.log("[played]", turn, index, gameState[index]);
     const char = getChar(turn);
     const newGameState = gameState;
@@ -90,6 +88,10 @@ function App() {
         ]
       );
       setResult(`Player ${turn} won`);
+    }
+    // all boxes are filled
+    if (newGameState.every((move) => move !== null)) {
+      setResult(`Nobody won`);
     }
     setMoves([...moves, [index, turn]]);
     setTurn(turn === 1 ? 2 : 1);
@@ -109,7 +111,6 @@ function App() {
   return (
     <div>
       <Score score={score} />
-      <p>{`its Player ${turn}'s turn (${getChar(turn)})`}</p>
       <div className="container">
         {gameState.map((value, index) => (
           <div key={index} onClick={() => play(index)} className="box">
@@ -117,7 +118,7 @@ function App() {
           </div>
         ))}
       </div>
-      {result && (
+      {result ? (
         <div>
           <p>{result}</p>
           <button
@@ -139,19 +140,23 @@ function App() {
             reset scores
           </button>
         </div>
+      ) : (
+        <p>{`its Player ${turn}'s turn (${getChar(turn)})`}</p>
       )}
-      <ul>
-        <p>moves</p>
-        {moves.map((move, index) => (
-          <li key={index}>
-            <button onClick={undo.bind(null, index)}>{`Player ${
-              move[1]
-            } put ${getChar(move[1])} at ${getReadablePosition(
-              move[0]
-            )}`}</button>
-          </li>
-        ))}
-      </ul>
+      {moves.length > 0 && (
+        <ul>
+          <p>moves</p>
+          {moves.map((move, index) => (
+            <li key={index}>
+              <button onClick={undo.bind(null, index)}>{`Player ${
+                move[1]
+              } put ${getChar(move[1])} at ${getReadablePosition(
+                move[0]
+              )}`}</button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
