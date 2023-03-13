@@ -70,16 +70,17 @@ function App() {
   };
 
   const play = (index: number) => {
-    if (result) {
-      return;
-    }
+    // game has already concluded
+    if (result) return;
+    // selected box is already filled
+    if (gameState[index] !== null) return;
+    // all boxes are filled
+    if (gameState.every((move) => move !== null)) return;
     console.log("[played]", turn, index, gameState[index]);
     const char = getChar(turn);
-    if (gameState[index] === null) {
-      const newGameState = gameState;
-      newGameState.splice(index, 1, char);
-      setGameState(newGameState);
-    }
+    const newGameState = gameState;
+    newGameState.splice(index, 1, char);
+    setGameState(newGameState);
     const won = checkIfWon();
     if (won) {
       setScore(
