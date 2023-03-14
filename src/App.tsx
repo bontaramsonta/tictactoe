@@ -5,8 +5,8 @@ const getChar = (turn: number) => (turn === 1 ? "X" : "O");
 const getReadablePosition = (index: number) => {
   const result: string[] = [];
   if (index === 4) result.push("center");
-  if ([0, 1, 2].includes(index)) result.push("top");
   if ([1, 3, 5, 7].includes(index)) result.push("middle");
+  if ([0, 1, 2].includes(index)) result.push("top");
   if ([6, 7, 8].includes(index)) result.push("bottom");
   if ([0, 3, 6].includes(index)) result.push("left");
   if ([2, 5, 8].includes(index)) result.push("right");
